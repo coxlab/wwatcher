@@ -10,4 +10,5 @@ class WeightWatcher(object):
 		self.client = gdata.spreadsheet.service.SpreadsheetsService()
 		self.client.email = username
 		self.client.password = password
+		self.client.source = '0Artit3NRL1oDdFVWRFMyeWpRb005WWsxRjBvQXkteGc'
 		
