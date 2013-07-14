@@ -20,8 +20,47 @@ class WeightWatcher(object):
 		self.animals_to_analyze = []
 		self.data_list_length = len(self.data)
 	
-	def IsHeavyEnough(self):
-		#go through each aninmal specified by user and make sure it weighs at least 90% its latest max weight
+	def IsHeavyEnough(self, self.animals_to_analyze):
+		'''
+		#go through last 4 weekday weights of each aninmal specified by user and make sure each day it weighs at least 90 
+		percent its latest max weight
+
+		param self.animals_to_analyze should be a string
+
+		Returns a dict with animal names (str) as keys and True as the value iff each of the last 4 weekdays 
+		it weighed enough
+		'''
+		#get latest max weights from backwards spreadsheet (backwards so it starts looking for most recent data)
+		#make dictionary to store animal names as keys and max weights as values
+		#use data_position to remember where you are in the backwards (i.e. most recent) weights data during while loop
+		maxes = {}
+		animals_copy = self.animals_to_analyze[:]
+		data_position = 0
+		backwards_data = self.data[::-1]
+		#do the following until we've gotten every animal's max weight
+		#backwards_data[data_position[5] is overnight h20 column, "yes" means the comp has found a max weight
+		#backwards_data[data_position][3] is animal ID in the spreadsheet, so the first boolean makes sure it's an animal 
+		#for which the user wants to verify the weight
+		while (len(animals_copy)) > 0 and (data_position <= self.data_list_length):
+			if (backwards_data[data_position][3] in animals_copy) and ("yes" in backwards_data[data_position][5]):
+				#make sure there's an animal weight (not '-' or 'x' in position backwards_data[data_pos][4]
+				#by trying to make the string an int; if there's an exception it's not a valid animal weight
+				try:
+					animal_weight = int(backwards_data[data_position][4])
+					#if no exception, add key (animal ID as string) and value (weight as int) to maxes dict
+					maxes[backwards_data[data_position][3]] = animal_weight
+					animals_copy.remove(backwards_data[data_position][3])
+					data_position += 1
+				except:
+					#continue in loop to find a weekend ("yes") weight with a proper numerical value
+					data_position += 1
+
+		print 'Found max weights: ' + str(maxes)
+
 		
-		def find_max_weight(animal):
-			
+
+
+
+
+
+
