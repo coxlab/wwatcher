@@ -23,13 +23,16 @@ class WeightWatcher(object):
 	def IsHeavyEnough(self, self.animals_to_analyze):
 		'''
 		#go through last 4 weekday weights of each aninmal specified by user and make sure each day it weighs at least 90 
-		percent its latest max weight
+		percent its most recent max weight
 
-		param self.animals_to_analyze should be a string
+		param self.animals_to_analyze should be a list of strings
 
-		Returns a dict with animal names (str) as keys and True as the value iff each of the last 4 weekdays 
-		it weighed enough
+		*Returns a dict with animal names (str) as keys and True as the value iff each of the last 4 weekdays 
+		it weighed enough*
 		'''
+
+		#================================================================================================================
+
 		#get latest max weights from backwards spreadsheet (backwards so it starts looking for most recent data)
 		#make dictionary to store animal names as keys and max weights as values
 		#use data_position to remember where you are in the backwards (i.e. most recent) weights data during while loop
@@ -51,13 +54,38 @@ class WeightWatcher(object):
 					maxes[backwards_data[data_position][3]] = animal_weight
 					animals_copy.remove(backwards_data[data_position][3])
 					data_position += 1
-				except:
+				except ValueError:
 					#continue in loop to find a weekend ("yes") weight with a proper numerical value
 					data_position += 1
 
 		print 'Found max weights: ' + str(maxes)
+		#make sure all animal max weights were found
+		if len(animals_copy) > 0:
+			raise Exception("Could not find max weight for: " + str(animals_copy).strip('[]'))
 
-		
+		#================================================================================================================
+
+		#get most recent 4 weekday weights for each animal
+		#make mins dict to store animal ID (str) as keys and 4 weekday weights as values (a list of ints)
+		def DaysNeeded():
+			'''
+			Returns a dict with a starting value of 4 (int) for each animal key (str) in animals_copy
+			Used in the while loop below to make it keep looping until each animal has at least 4 weekday weights 
+			'''
+			days_status = {}
+			for each in animals_copy:
+				days_status[each] = 4
+			return days_status
+
+		animals_copy = self.animals_to_analyze[:]
+		countdown = DaysNeeded()
+		weekday_weights = {}
+		data_position = 0
+
+		while 
+
+
+
 
 
 
