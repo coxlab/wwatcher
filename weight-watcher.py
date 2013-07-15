@@ -7,17 +7,26 @@ from spreadsheet import Spreadsheet
 
 class WeightWatcher(object):
 
-	def __init__(self, username, password, spreadsheet_name='Daily Weights after 7-11-13', \
+	def __init__(self, username, password, animals, spreadsheet_name='Daily Weights after 7-11-13', \
 			spreadsheet_url=None):
 		'''
-		TODO: explain this class
-		
+		An instance of the WeightWatcher class has a spreadsheet class attribute to 
+			access Google Sheets data with animal weights. The WeightWatcher class 
+			also has methods to monitor and analyze animal weights.
+
+		param username: a string, login email for Google Docs
+		param password: a string, login password for Google Docs
+		param animals: a list, where each item in the list is an animal ID (str)
+		param spreadsheet_name (optional): a string, Name of spreadsheet you want to parse, 
+			default is currently the Cox lab shared sheet 'Daily Weights after 7-11-13'
+		param spreadsheet_url (optional): a string, url for a spreadsheet if you want to 
+			use this instead of a sheet name or the default spreadsheet_name
 		'''
 		
 		#self.data is a list of lists with all the spreadsheet data
-		#e.g. nested list ['date/time', 'username#coxlab.org', 'animal ID', 'weight', 'after water? yes or no'] <--one row
+		#e.g. nested list ['date/time', 'username#coxlab.org', 'animal ID', 'weight', 'after water? yes or no'] <--one row from spreadsheet
 		self.data = Spreadsheet(username, password, spreadsheet_name, spreadsheet_url).worksheet_open.get_all_values()
-		self.animals_to_analyze = []
+		self.animals_to_analyze = animals
 		self.data_list_length = len(self.data)
 	
 	def IsHeavyEnough(self, self.animals_to_analyze):
