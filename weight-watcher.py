@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 
 import gspread
 import sys
@@ -9,8 +9,8 @@ class Spreadsheet(object):
 
 	'''
 	An instance of this class uses the gspread package (https://github.com/burnash/gspread)
-		to communicate with the Google Docs API. This opens the first worksheet in a spreadsheet 
-		specified in __init__ (i.e. sheet1 in 'Daily Weights after 7-11-13')
+	to communicate with the Google Docs API. This opens the first worksheet in a spreadsheet 
+	specified in __init__ (i.e. sheet1 in 'Daily Weights after 7-11-13')
 
 	'''
 
@@ -41,8 +41,8 @@ class WeightWatcher(object):
 			spreadsheet_url=None):
 		'''
 		An instance of the WeightWatcher class has a spreadsheet class attribute to 
-			access Google Sheets data with animal weights. The WeightWatcher class 
-			also has methods to monitor and analyze animal weights.
+		access Google Sheets data with animal weights. The WeightWatcher class 
+		also has methods to monitor and analyze animal weights.
 
 		param username: a string, login email for Google Docs
 		param password: a string, login password for Google Docs
@@ -173,10 +173,22 @@ class WeightWatcher(object):
 
 		return IsHeavyEnoughDict
 
+	#====================================================================================================================
+	#====================================================================================================================
 
+	def graph_weights(self):
+		raise Exception("Not yet implemented")
 
+	#====================================================================================================================
+	#====================================================================================================================
 
+	def correlation(self):
+		raise Exception("Not yet implemented")
 
+	#====================================================================================================================
+	#====================================================================================================================
 
+def main():
+	
 
 
