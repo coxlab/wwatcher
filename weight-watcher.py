@@ -10,7 +10,7 @@ class WeightWatcher(object):
 	def __init__(self, username, password, spreadsheet_name='Daily Weights after 7-11-13', \
 			spreadsheet_url=None):
 		'''
-		
+		TODO: explain this class
 		
 		'''
 		
@@ -44,7 +44,7 @@ class WeightWatcher(object):
 		#backwards_data[data_position[5] is overnight h20 column, "yes" means the comp has found a max weight
 		#backwards_data[data_position][3] is animal ID in the spreadsheet, so the first boolean makes sure it's an animal 
 		#for which the user wants to verify the weight
-		while (len(animals_copy)) > 0 and (data_position <= self.data_list_length):
+		while (len(animals_copy)) > 0 and (data_position < self.data_list_length):
 			if (backwards_data[data_position][3] in animals_copy) and ("yes" in backwards_data[data_position][5]):
 				#make sure there's an animal weight (not '-' or 'x' in position backwards_data[data_pos][4]
 				#by trying to make the string an int; if there's an exception it's not a valid animal weight
@@ -53,10 +53,9 @@ class WeightWatcher(object):
 					#if no exception, add key (animal ID as string) and value (weight as int) to maxes dict
 					maxes[backwards_data[data_position][3]] = animal_weight
 					animals_copy.remove(backwards_data[data_position][3])
-					data_position += 1
 				except ValueError:
-					#continue in loop to find a weekend ("yes") weight with a proper numerical value
-					data_position += 1
+					print "ValueError at %s" % data_position
+			data_position += 1
 
 		print 'Found max weights: ' + str(maxes)
 		#make sure all animal max weights were found
@@ -67,9 +66,9 @@ class WeightWatcher(object):
 
 		#get most recent 4 weekday weights for each animal
 		#make mins dict to store animal ID (str) as keys and 4 weekday weights as values (a list of ints)
-		def DaysNeeded():
+		def DaysNeeded(animals_copy):
 			'''
-			Returns a dict with a starting value of 4 (int) for each animal key (str) in animals_copy
+			Returns a dict with a starting value of 4 (int) for each animal ID key (str) in animals_copy
 			Used in the while loop below to make it keep looping until each animal has at least 4 weekday weights 
 			'''
 			days_status = {}
@@ -77,12 +76,52 @@ class WeightWatcher(object):
 				days_status[each] = 4
 			return days_status
 
-		animals_copy = self.animals_to_analyze[:]
-		countdown = DaysNeeded()
-		weekday_weights = {}
-		data_position = 0
+		def AllDaysRetrieved(DaysNeededDict):
+			'''
+			Returns a boolean to indicate whether EVERY animal has 4 weekday weights recorded, indicated by a value of 0 
+			in countdown
+			'''
+			dict_values = DaysNeededDict.values()
+			for each in dict_values:
+				if each > 0:
+					return False
+			return True
 
-		while 
+		def MakeDictLists(animals_copy):
+			'''
+			make an empty list as the value for each animal (key) in weekday_weights 
+			'''
+			dictionary = {}
+			for each in animals_copy:
+				dictionary[each]: []
+			return dictionary
+
+		animals_copy = self.animals_to_analyze[:]
+		countdown = DaysNeeded(animals_copy)
+		weekday_weights = MakeDictLists(animals_copy)
+		data_position = 0
+		#check to see if every animal has 4 weekday weights before continuing in the while loop
+		while not (AllDaysRetrieved(countdown)) and (data_position < self.data_list_length):
+			#do the following if the data position (row) is for an animal in self.animals_to_analyze and it's 
+			#a weekday weight (i.e. "no" in column 5 of the spreadsheet)
+			if (backwards_data[data_position][3] in animals_copy) and ("no" in backwards_data[data_position][5]):
+				try:
+					animal_weight = int(backwards_data[data_position][4])
+					if countdown[backwards_data[data_position][3]] > 0:
+						weekday_weights[backwards_data[data_position][3]].append(animal_weight)
+						countdown[backwards_data[data_position][3]] -= 1
+				except ValueError:
+					print "ValueError at %s" % data_position
+			data_position += 1
+
+		print "Found weekday weights: " + str(weekday_weights)
+		if not AllDaysRetrieved(countdown):
+			raise Exception("Could not find weekly weight for all animals")
+
+		#================================================================================================================
+
+		
+
 
 
 
