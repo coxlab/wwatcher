@@ -59,7 +59,7 @@ class WeightWatcher(object):
 		self.animals_to_analyze = animals
 		self.data_list_length = len(self.data)
 	
-	def IsHeavyEnough(self, self.animals_to_analyze):
+	def IsHeavyEnough(self):
 		'''
 		#go through last 4 weekday weights of each aninmal specified by user and make sure each day it weighs at least 90 
 		percent its most recent max weight
@@ -132,7 +132,7 @@ class WeightWatcher(object):
 			'''
 			dictionary = {}
 			for each in animals_copy:
-				dictionary[each]: []
+				dictionary[each] = []
 			return dictionary
 
 		animals_copy = self.animals_to_analyze[:]
@@ -159,9 +159,19 @@ class WeightWatcher(object):
 
 		#================================================================================================================
 
-		
+		#make a dict with animal ID keys (str) and True or False values if the animal weighed more than 90% of 
+		#its max (weekend) weight or less, respectively. Days equal to 90% of its max make
+		#the animal "false" in IsHeavyEnoughDict
 
+		IsHeavyEnoughDict = {}
+		for animal in self.animals_to_analyze:
+			for each in weekday_weights[animal]:
+				if each > (0.9*(maxes[animal])):
+					IsHeavyEnoughDict[animal] = True
+				else:
+					IsHeavyEnoughDict[animal] = False
 
+		return IsHeavyEnoughDict
 
 
 
