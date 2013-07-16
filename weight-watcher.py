@@ -59,7 +59,7 @@ class WeightWatcher(object):
 		self.animals_to_analyze = animals
 		self.data_list_length = len(self.data)
 	
-	def IsHeavyEnough(self):
+	def IsHeavyEnough(self, days=4):
 		'''
 		#go through last 4 weekday weights of each aninmal specified by user and make sure each day it weighs at least 90 
 		percent its most recent max weight
@@ -93,7 +93,7 @@ class WeightWatcher(object):
 					maxes[backwards_data[data_position][3]] = animal_weight
 					animals_copy.remove(backwards_data[data_position][3])
 				except ValueError:
-					print "ValueError at %s" % data_position
+					print "ValueError at %s, skipping to next cell" % data_position
 			data_position += 1
 
 		print 'Found max weights: ' + str(maxes)
@@ -105,14 +105,14 @@ class WeightWatcher(object):
 
 		#get most recent 4 weekday weights for each animal
 		#make mins dict to store animal ID (str) as keys and 4 weekday weights as values (a list of ints)
-		def DaysNeeded(animals_copy):
+		def DaysNeeded(animals_copy, days):
 			'''
-			Returns a dict with a starting value of 4 (int) for each animal ID key (str) in animals_copy
+			Returns a dict with a starting value of days (4 default) (int) for each animal ID key (str) in animals_copy
 			Used in the while loop below to make it keep looping until each animal has at least 4 weekday weights 
 			'''
 			days_status = {}
 			for each in animals_copy:
-				days_status[each] = 4
+				days_status[each] = days
 			return days_status
 
 		def AllDaysRetrieved(DaysNeededDict):
@@ -136,7 +136,8 @@ class WeightWatcher(object):
 			return dictionary
 
 		animals_copy = self.animals_to_analyze[:]
-		countdown = DaysNeeded(animals_copy)
+		#default number of days (4) used below "DaysNeeded(animals_copy, days) specified in WeightWatcher.IsHeavyEnough attributes
+		countdown = DaysNeeded(animals_copy, days)
 		weekday_weights = MakeDictLists(animals_copy)
 		data_position = 0
 		#check to see if every animal has 4 weekday weights before continuing in the while loop
@@ -150,7 +151,7 @@ class WeightWatcher(object):
 						weekday_weights[backwards_data[data_position][3]].append(animal_weight)
 						countdown[backwards_data[data_position][3]] -= 1
 				except ValueError:
-					print "ValueError at %s" % data_position
+					print "ValueError at %s, skipping to next cell" % data_position
 			data_position += 1
 
 		print "Found weekday weights: " + str(weekday_weights)
@@ -188,7 +189,7 @@ class WeightWatcher(object):
 	#====================================================================================================================
 	#====================================================================================================================
 
-def main():
+
 	
 
 
