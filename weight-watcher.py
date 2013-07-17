@@ -4,6 +4,41 @@ import gspread
 import sys
 import pylab
 import argparse
+import getpass
+
+def main():
+
+	'''
+	Parse command line options to analyze animal weight data from Google Sheets. Creates a WeightWatcher class and executes
+	methods specified by the user on the command line. 
+	'''
+	parser = argparse.ArgumentParser(description="A command line tool to analyze animal weights stored in Google Sheets", \
+		usage="weight-watcher.py Username animalName1 animalName2 animalName3 [options] \n\
+		or \n\
+		weight-watcher.py [options] Username animalName1 animalName2 animalName3")
+	parser.add_argument('username', help="Google Docs username, required as first argument (e.g. chapman@coxlab.org)")
+	parser.add_argument('animals', help="Animal IDs to analyze, separated by spaces. At least 1 is required, but you \
+		can add as many as you want", nargs="+")
+	parser.add_argument('-c', action="store_true", default=False, help="Check to make sure each animal weighed at least \
+		90% of its most recent maximum (weekend) value for the last 4 weekdays")
+	parser.add_argument('-d', help="Specify the number of weekdays to analyze")
+	parser.add_argument('-g', action="store_true", default=False, help="Make a graph of each animal's weight over time")
+	parser.add_argument('-a', action="store_true", default=False, help="Make one graph of every animal's weight over time")
+
+	parsed = parser.parse_args()
+
+	#make sure at least 1 option is specified, else give the user help and exit
+	if (parsed.c == False) and (parsed.d == None) and (parsed.g == False) and (parsed.a == False):
+		parser.print_help()
+		sys.exit()
+
+	password = getpass.getpass("Enter your Google Docs password: ")
+
+	
+
+
+if __name__ == '__main__':
+	main()
 
 class Spreadsheet(object):
 
