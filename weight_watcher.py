@@ -53,7 +53,7 @@ def main():
 				problem_animals.append(animal)
 
 		if len(problem_animals) == 0:
-			print "Animal weights look fine. Awesome!"
+			print "\nAnimal weights look fine. Awesome!\n"
 		else:
 			for each in problem_animals:
 				print "%s is underweight. Someone call the vet!"
@@ -161,7 +161,7 @@ class WeightWatcher(object):
 			data_position += 1
 			
 
-		print 'Found max weights: ' + str(maxes)
+		print '\nMax weights: ' + str(maxes) + "\n"
 		#make sure all animal max weights were found
 		if len(animals_copy) > 0:
 			raise Exception("Could not find max weight for: " + str(animals_copy).strip('[]'))
@@ -219,7 +219,7 @@ class WeightWatcher(object):
 					print "ValueError at %s, skipping to next cell" % data_position
 			data_position += 1
 
-		print "Found weekday weights: " + str(weekday_weights)
+		print "\nFound weekday weights: " + str(weekday_weights) + "\n"
 		if not AllDaysRetrieved(countdown):
 			raise Exception("Could not find weekly weight for all animals")
 
