@@ -53,7 +53,7 @@ def main():
 				problem_animals.append(animal)
 
 		if len(problem_animals) == 0:
-			print "\nAnimal weights look fine. Awesome!\n"
+			print "Animal weights look fine. Awesome!\n"
 		else:
 			for each in problem_animals:
 				print "%s is underweight. Someone call the vet!"
