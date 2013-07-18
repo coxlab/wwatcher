@@ -5,7 +5,7 @@ import sys
 import pylab
 import argparse
 import getpass
-import weight_watcher
+import wwatcher
 
 def main():
 
@@ -40,7 +40,7 @@ def main():
 
 	#if the user selects the -c option, check animal weights to make sure they don't go below 90% max
 	if parsed.c:
-		watcher = weight_watcher.WeightWatcher(username, password, animals)
+		watcher = wwatcher.WeightWatcher(username, password, animals)
 		if parsed.d:
 			HeavyEnoughDict = watcher.IsHeavyEnough(days=parsed.d)
 		else:
