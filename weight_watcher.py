@@ -219,7 +219,7 @@ class WeightWatcher(object):
 					print "ValueError at %s, skipping to next cell" % data_position
 			data_position += 1
 
-		print "\nFound weekday weights: " + str(weekday_weights) + "\n"
+		print "Latest weekday weights: " + str(weekday_weights) + "\n"
 		if not AllDaysRetrieved(countdown):
 			raise Exception("Could not find weekly weight for all animals")
 
