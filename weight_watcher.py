@@ -5,6 +5,7 @@ import sys
 import pylab
 import argparse
 import getpass
+import weight_watcher
 
 def main():
 
@@ -12,6 +13,7 @@ def main():
 	Parse command line options to analyze animal weight data from Google Sheets. Creates a WeightWatcher class and executes
 	methods specified by the user on the command line. 
 	'''
+	#TODO add spreadsheet name and url customizability to command line interface
 	parser = argparse.ArgumentParser(description="A command line tool to analyze animal weights stored in Google Sheets", \
 		usage="weight-watcher.py Username animalName1 animalName2 animalName3 [options] \n\
 		or \n\
@@ -27,14 +29,40 @@ def main():
 
 	parsed = parser.parse_args()
 
-	#make sure at least 1 option is specified, else give the user help and exit
+	#make sure at least 1 specified option calls a WeightWatcher class method, else give the user help and exit
 	if (parsed.c == False) and (parsed.d == None) and (parsed.g == False) and (parsed.a == False):
 		parser.print_help()
 		sys.exit()
 
 	password = getpass.getpass("Enter your Google Docs password: ")
+	username = parsed.username
+	animals = parsed.animals
 
-	
+	#if the user selects the -c option, check animal weights to make sure they don't go below 90% max
+	if parsed.c:
+		watcher = weight_watcher.WeightWatcher(username, password, animals)
+		if parsed.d:
+			HeavyEnoughDict = watcher.IsHeavyEnough(days=parsed.d)
+		else:
+			HeavyEnoughDict = watcher.IsHeavyEnough()
+
+		#make a list of animals that aren't heavy enough
+		problem_animals = []
+		for animal in animals:
+			if not HeavyEnoughDict[animal]:
+				problem_animals.append(animal)
+
+		if len(problem_animals) == 0:
+			print "Animal weights look fine. Awesome!"
+		else:
+			for each in problem_animals:
+				print "%s is underweight. Someone call the vet!"
+
+	sys.exit()
+
+
+
+
 
 
 if __name__ == '__main__':
@@ -115,21 +143,23 @@ class WeightWatcher(object):
 		data_position = 0
 		backwards_data = self.data[::-1]
 		#do the following until we've gotten every animal's max weight
-		#backwards_data[data_position[5] is overnight h20 column, "yes" means the comp has found a max weight
-		#backwards_data[data_position][3] is animal ID in the spreadsheet, so the first boolean makes sure it's an animal 
+		#backwards_data[data_position[4] is overnight h20 column, "yes" means the comp has found a max weight
+		#backwards_data[data_position][2] is animal ID in the spreadsheet, so the first boolean makes sure it's an animal 
 		#for which the user wants to verify the weight
+
 		while (len(animals_copy)) > 0 and (data_position < self.data_list_length):
-			if (backwards_data[data_position][3] in animals_copy) and ("yes" in backwards_data[data_position][5]):
+			if (backwards_data[data_position][2] in animals_copy) and ("yes" in backwards_data[data_position][4]):
 				#make sure there's an animal weight (not '-' or 'x' in position backwards_data[data_pos][4]
 				#by trying to make the string an int; if there's an exception it's not a valid animal weight
 				try:
-					animal_weight = int(backwards_data[data_position][4])
+					animal_weight = int(backwards_data[data_position][3])
 					#if no exception, add key (animal ID as string) and value (weight as int) to maxes dict
-					maxes[backwards_data[data_position][3]] = animal_weight
-					animals_copy.remove(backwards_data[data_position][3])
+					maxes[backwards_data[data_position][2]] = animal_weight
+					animals_copy.remove(backwards_data[data_position][2])
 				except ValueError:
 					print "ValueError at %s, skipping to next cell" % data_position
 			data_position += 1
+			
 
 		print 'Found max weights: ' + str(maxes)
 		#make sure all animal max weights were found
@@ -179,12 +209,12 @@ class WeightWatcher(object):
 		while not (AllDaysRetrieved(countdown)) and (data_position < self.data_list_length):
 			#do the following if the data position (row) is for an animal in self.animals_to_analyze and it's 
 			#a weekday weight (i.e. "no" in column 5 of the spreadsheet)
-			if (backwards_data[data_position][3] in animals_copy) and ("no" in backwards_data[data_position][5]):
+			if (backwards_data[data_position][2] in animals_copy) and ("no" in backwards_data[data_position][4]):
 				try:
-					animal_weight = int(backwards_data[data_position][4])
-					if countdown[backwards_data[data_position][3]] > 0:
-						weekday_weights[backwards_data[data_position][3]].append(animal_weight)
-						countdown[backwards_data[data_position][3]] -= 1
+					animal_weight = int(backwards_data[data_position][3])
+					if countdown[backwards_data[data_position][2]] > 0:
+						weekday_weights[backwards_data[data_position][2]].append(animal_weight)
+						countdown[backwards_data[data_position][2]] -= 1
 				except ValueError:
 					print "ValueError at %s, skipping to next cell" % data_position
 			data_position += 1
