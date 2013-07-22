@@ -5,6 +5,7 @@ import sys
 import pylab
 import argparse
 import getpass
+import datetime
 import wwatcher
 
 def main():
@@ -34,9 +35,15 @@ def main():
 		parser.print_help()
 		sys.exit()
 
-	password = getpass.getpass("Enter your Google Docs password: ")
 	username = parsed.username
 	animals = parsed.animals
+
+	#if the username is weights@coxlab.org, no need to ask for password in terminal. It's this crazy string, and we want to run
+	#the script automatically without stopping for user input every week
+	if username == "weights@coxlab.org":
+		password = "}ONCuD*Xh$LNN8ni;0P_HR_cIy|Q5p"
+	else:
+		password = getpass.getpass("Enter your Google Docs password: ")
 
 	#if the user selects the -c option, check animal weights to make sure they don't go below 90% max
 	if parsed.c:
@@ -117,7 +124,7 @@ class WeightWatcher(object):
 		'''
 		
 		#self.data is a list of lists with all the spreadsheet data
-		#e.g. nested list ['date/time', 'username#coxlab.org', 'animal ID', 'weight', 'after water? yes or no'] <--one row from spreadsheet
+		#e.g. nested list ['date/time', 'username@coxlab.org', 'animal ID', 'weight', 'after water? yes or no'] <--one row from spreadsheet
 		self.data = Spreadsheet(username, password, spreadsheet_name, spreadsheet_url).worksheet_open.get_all_values()
 		self.animals_to_analyze = animals
 		self.data_list_length = len(self.data)
@@ -242,8 +249,34 @@ class WeightWatcher(object):
 	#====================================================================================================================
 	#====================================================================================================================
 
-	def graph_weights(self):
-		raise Exception("Not yet implemented")
+	def format_data_for_graph(self):
+		'''
+		Returns a dict with animal IDs (str) as keys and a list of lists (dates object list, weights list) as values.
+		e.g. {"Q4":[[dates], [weights]]}
+		'''
+		def date_string_to_object(date_string):
+			'''
+			Takes in a date as a string from the spreadsheet (format 'month/day/year hrs:min:secs' or 'month/day/year')
+			and returns that date as a date object from the datetime module
+			'''
+			#make splat, which is a list with date info e.g. ['month', 'day', 'year', 'hrs', 'min', 'sec']
+			formatted = date_string.replace(":", "/").replace(" ", "/")
+			splat = formatted.split("/")
+			date_obj = #finish this
+			
+		data_copy = self.data[:]
+		animals = self.animals_to_analyze[:]
+		graph_dict = {}
+
+		for animal in animals:
+			data_position = 0
+			#dates is a list of date objects
+			dates = []
+			#weights is a list of weights corresponding to the date objects above
+			weights = []
+			while (data_position < self.data_list_length):
+
+				if (data_copy[data_position][2] in animals) and 
 
 	#====================================================================================================================
 	#====================================================================================================================
