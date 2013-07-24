@@ -68,7 +68,10 @@ def main():
 	if parsed.g:
 		watcher = wwatcher.WeightWatcher(username, password, animals)
 		data_for_graph = watcher.format_data_for_graph()
-		print data_for_graph
+		#used this for unit testing (len of each item was the same) for each in animals:
+		#	print len(data_for_graph[each][0])
+		#	print len(data_for_graph[each][1])
+		#	print len(data_for_graph[each][2])
 	sys.exit()
 
 
@@ -129,7 +132,9 @@ class WeightWatcher(object):
 		
 		#self.data is a list of lists with all the spreadsheet data
 		#e.g. nested list ['date/time', 'username@coxlab.org', 'animal ID', 'weight', 'after water? yes or no'] <--one row from spreadsheet
+		print "Importing spreadsheet from Google Docs...\n"
 		self.data = Spreadsheet(username, password, spreadsheet_name, spreadsheet_url).worksheet_open.get_all_values()
+		print "Successfully imported spreadsheet\n"
 		self.animals_to_analyze = animals
 		self.data_list_length = len(self.data)
 	
@@ -168,7 +173,7 @@ class WeightWatcher(object):
 					maxes[backwards_data[data_position][2]] = animal_weight
 					animals_copy.remove(backwards_data[data_position][2])
 				except ValueError:
-					print "ValueError at %s, skipping to next cell" % data_position
+					pass #print "ValueError at %s, skipping to next cell" % data_position (used for testing)
 			data_position += 1
 			
 
@@ -227,7 +232,7 @@ class WeightWatcher(object):
 						weekday_weights[backwards_data[data_position][2]].append(animal_weight)
 						countdown[backwards_data[data_position][2]] -= 1
 				except ValueError:
-					print "Couldn't get weight at %s, skipping to next cell" % data_position
+					pass #print "Couldn't get weight at %s, skipping to next cell" % data_position
 			data_position += 1
 
 		print "Latest weekday weights: " + str(weekday_weights) + "\n"
@@ -275,8 +280,9 @@ class WeightWatcher(object):
 		data_copy = self.data[:]
 		animals = self.animals_to_analyze[:]
 		graph_dict = {}
-
+		
 		for animal in animals:
+			print "Getting data for %s" % animal
 			data_position = 0
 			#dates is a list of date objects
 			dates = []
@@ -290,22 +296,23 @@ class WeightWatcher(object):
 				if (data_copy[data_position][2] == animal):
 					try:
 						wgt = int(data_copy[data_position][3])
-						date = date_string_to_object(data_copy[data_position][0])
-						dates.append(date)
 						weights.append(wgt)
 					except ValueError:
-						print "Couldn't get weight at %s, skipping to next cell" % data_position
-					except TypeError:
-						print "Couldn't get date at %s, skipping to next cell" % data_position
+						pass #print "Couldn't get weight at %s, skipping to next cell" % data_position
+							 #used for testing
 
-					if "yes" in data_copy[data_position][4]:
-						is_maxwgt.append(True)
-					else:
-						is_maxwgt.append(False)
+					else: 
+						date = date_string_to_object(data_copy[data_position][0])
+						dates.append(date)
+						if "yes" in data_copy[data_position][4]:
+							is_maxwgt.append(True)
+						else:
+							is_maxwgt.append(False)
+
 				data_position += 1
 
-			#after it has gotten dates, weights, is_maxwgt for each animal, put that info in graph_dict
-
+			#after it has gotten dates, weights, is_maxwgt for each animal, put that info in graph_dict with 
+			#animal ID as the key for your list of lists
 			graph_dict[animal] = [dates, weights, is_maxwgt]
 		return graph_dict
 
