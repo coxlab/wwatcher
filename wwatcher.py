@@ -104,9 +104,9 @@ class Spreadsheet(object):
 		param spreadsheet_url: A string, the url for a Google Docs spreadsheet if you want to use a different one
 
 		'''
-		
+		print "\nLogging into Google Docs..."
 		self.login = gspread.login(username, password)
-
+		print "Importing spreadsheet from Google Docs..."
 		if spreadsheet_url == None:
 			self.worksheet_open = self.login.open(spreadsheet_name).sheet1
 		else:
@@ -132,7 +132,7 @@ class WeightWatcher(object):
 		
 		#self.data is a list of lists with all the spreadsheet data
 		#e.g. nested list ['date/time', 'username@coxlab.org', 'animal ID', 'weight', 'after water? yes or no'] <--one row from spreadsheet
-		print "Importing spreadsheet from Google Docs...\n"
+	
 		self.data = Spreadsheet(username, password, spreadsheet_name, spreadsheet_url).worksheet_open.get_all_values()
 		print "Successfully imported spreadsheet\n"
 		self.animals_to_analyze = animals
