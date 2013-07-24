@@ -16,9 +16,9 @@ def main():
 	'''
 	#TODO add spreadsheet name and url customizability to command line interface
 	parser = argparse.ArgumentParser(description="A command line tool to analyze animal weights stored in Google Sheets", \
-		usage="weight-watcher.py Username animalName1 animalName2 animalName3 [options] \n\
+		usage="wwatcher.py Username animalName1 animalName2 animalName3 [options] \n\
 		or \n\
-		weight-watcher.py [options] Username animalName1 animalName2 animalName3")
+		wwatcher.py [options] Username animalName1 animalName2 animalName3")
 	parser.add_argument('username', help="Google Docs username, required as first argument (e.g. chapman@coxlab.org)")
 	parser.add_argument('animals', help="Animal IDs to analyze, separated by spaces. At least 1 is required, but you \
 		can add as many as you want", nargs="+")
