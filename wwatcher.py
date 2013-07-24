@@ -58,7 +58,7 @@ def main():
 		for animal in animals:
 			if not HeavyEnoughDict[animal]:
 				problem_animals.append(animal)
-
+		#TODO implement email functionality for alerts when this option is run automatically
 		if len(problem_animals) == 0:
 			print "Animal weights look fine. Awesome!\n"
 		else:
@@ -68,7 +68,8 @@ def main():
 	if parsed.g:
 		watcher = wwatcher.WeightWatcher(username, password, animals)
 		data_for_graph = watcher.format_data_for_graph()
-		#used this for unit testing (len of each item was the same) for each in animals:
+	
+		#for each in animals: (used this to unit test)
 		#	print len(data_for_graph[each][0])
 		#	print len(data_for_graph[each][1])
 		#	print len(data_for_graph[each][2])
