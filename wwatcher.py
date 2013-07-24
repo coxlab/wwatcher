@@ -65,6 +65,10 @@ def main():
 			for each in problem_animals:
 				print "%s is underweight. Someone call the vet!"
 
+	if parsed.g:
+		watcher = wwatcher.WeightWatcher(username, password, animals)
+		data_for_graph = watcher.format_data_for_graph()
+		print data_for_graph
 	sys.exit()
 
 
@@ -223,7 +227,7 @@ class WeightWatcher(object):
 						weekday_weights[backwards_data[data_position][2]].append(animal_weight)
 						countdown[backwards_data[data_position][2]] -= 1
 				except ValueError:
-					print "ValueError at %s, skipping to next cell" % data_position
+					print "Couldn't get weight at %s, skipping to next cell" % data_position
 			data_position += 1
 
 		print "Latest weekday weights: " + str(weekday_weights) + "\n"
@@ -251,7 +255,8 @@ class WeightWatcher(object):
 
 	def format_data_for_graph(self):
 		'''
-		Returns a dict with animal IDs (str) as keys and a list of lists (dates object list, weights list) as values.
+		Returns a dict with animal IDs (str) as keys and a list of lists [[date objects list], [weights as ints list], 
+			 [is_maxwgt list of Booleans]] as values.
 		e.g. {"Q4":[[dates], [weights]]}
 		'''
 		def date_string_to_object(date_string):
@@ -260,9 +265,12 @@ class WeightWatcher(object):
 			and returns that date as a date object from the datetime module
 			'''
 			#make splat, which is a list with date info e.g. ['month', 'day', 'year', 'hrs', 'min', 'sec']
+			#makes date_obj, which is a python datetime object
 			formatted = date_string.replace(":", "/").replace(" ", "/")
 			splat = formatted.split("/")
-			date_obj = #finish this
+			#splat[2] is year, splat[0] is month, and splat[1] is day. This is the format required by datetime.date
+			date_obj = datetime.date(*(map(int, [splat[2], splat[0], splat[1]])))
+			return date_obj
 			
 		data_copy = self.data[:]
 		animals = self.animals_to_analyze[:]
@@ -274,9 +282,32 @@ class WeightWatcher(object):
 			dates = []
 			#weights is a list of weights corresponding to the date objects above
 			weights = []
+			#maxweight is a list of true or false for whether each date/weight pair was max weight "true"/"yes"
+			#or a normal weekly weight "false"/"no" in data_copy[data_position][4]
+			is_maxwgt = []
 			while (data_position < self.data_list_length):
 
-				if (data_copy[data_position][2] in animals) and 
+				if (data_copy[data_position][2] == animal):
+					try:
+						wgt = int(data_copy[data_position][3])
+						date = date_string_to_object(data_copy[data_position][0])
+						dates.append(date)
+						weights.append(wgt)
+					except ValueError:
+						print "Couldn't get weight at %s, skipping to next cell" % data_position
+					except TypeError:
+						print "Couldn't get date at %s, skipping to next cell" % data_position
+
+					if "yes" in data_copy[data_position][4]:
+						is_maxwgt.append(True)
+					else:
+						is_maxwgt.append(False)
+				data_position += 1
+
+			#after it has gotten dates, weights, is_maxwgt for each animal, put that info in graph_dict
+
+			graph_dict[animal] = [dates, weights, is_maxwgt]
+		return graph_dict
 
 	#====================================================================================================================
 	#====================================================================================================================
