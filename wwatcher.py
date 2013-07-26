@@ -7,6 +7,11 @@ import argparse
 import getpass
 import datetime
 import wwatcher
+from matplotlib import pyplot
+import matplotlib.dates
+from matplotlib.dates import DateFormatter, WeekdayLocator, DayLocator, MONDAY
+import random
+from matplotlib import legend
 
 def main():
 
@@ -31,7 +36,7 @@ def main():
 	parsed = parser.parse_args()
 
 	#make sure at least 1 specified option calls a WeightWatcher class method, else give the user help and exit
-	if (parsed.c == False) and (parsed.d == None) and (parsed.g == False) and (parsed.a == False):
+	if (parsed.c == False) and (parsed.g == False) and (parsed.a == False):
 		parser.print_help()
 		sys.exit()
 
@@ -45,9 +50,9 @@ def main():
 	else:
 		password = getpass.getpass("Enter your Google Docs password: ")
 
+	watcher = wwatcher.WeightWatcher(username, password, animals)
 	#if the user selects the -c option, check animal weights to make sure they don't go below 90% max
 	if parsed.c:
-		watcher = wwatcher.WeightWatcher(username, password, animals)
 		if parsed.d:
 			HeavyEnoughDict = watcher.IsHeavyEnough(days=parsed.d)
 		else:
@@ -66,19 +71,56 @@ def main():
 				print "%s is underweight. Someone call the vet!"
 
 	if parsed.g:
-		watcher = wwatcher.WeightWatcher(username, password, animals)
+
+		#dict with animals ID strings as keys and a list of lists of the same length [[dates], [weights for those dates], [whether it was a weekend weight Boolean]]
 		data_for_graph = watcher.format_data_for_graph()
-	
-		#for each in animals: (used this to unit test)
-		#	print len(data_for_graph[each][0])
-		#	print len(data_for_graph[each][1])
-		#	print len(data_for_graph[each][2])
-	sys.exit()
+		for animal in animals:
+			dates = data_for_graph[animal][0]
+			weights = data_for_graph[animal][1]
+			fig = pyplot.figure(str(datetime.date.today()))
+			pyplot.title("Animal weight over time")
+			pyplot.ylabel("Animal Weight (g)")
+			ax = fig.gca()
+			mondays = WeekdayLocator(MONDAY, interval=2)
+			alldays = DayLocator()
+			weekFormatter = DateFormatter('%b %d %y')
+			ax.xaxis.set_major_locator(mondays)
+			ax.xaxis.set_minor_locator(alldays)
+			ax.xaxis.set_major_formatter(weekFormatter)
+			r = lambda: random.randint(0,255)
+			ax.plot_date(matplotlib.dates.date2num(dates), weights, '#%02X%02X%02X' % (r(),r(),r()), lw=2, label=str(animal))
+			pyplot.axis(ymin=400, ymax=750)
+			ax.legend(loc='best')
+			ax.xaxis_date()
+			ax.autoscale_view()
+			pyplot.setp(fig.gca().get_xticklabels(), rotation=35, horizontalalignment='right')
+			pyplot.show()
 
+	if parsed.a:
 
-
-
-
+		#dict with animals ID strings as keys and a list of lists of the same length [[dates], [weights for those dates], [whether it was a weekend weight Boolean]]
+		data_for_graph = watcher.format_data_for_graph()
+		for animal in animals:
+			dates = data_for_graph[animal][0]
+			weights = data_for_graph[animal][1]
+			fig = pyplot.figure(str(datetime.date.today()))
+			pyplot.title("Animal weight over time")
+			pyplot.ylabel("Animal Weight (g)")
+			ax = fig.gca()
+			mondays = WeekdayLocator(MONDAY, interval=2)
+			alldays = DayLocator()
+			weekFormatter = DateFormatter('%b %d %y')
+			ax.xaxis.set_major_locator(mondays)
+			ax.xaxis.set_minor_locator(alldays)
+			ax.xaxis.set_major_formatter(weekFormatter)
+			r = lambda: random.randint(0,255)
+			ax.plot_date(matplotlib.dates.date2num(dates), weights, '#%02X%02X%02X' % (r(),r(),r()), lw=2, label=str(animal))
+			pyplot.axis(ymin=400, ymax=750)
+			ax.legend(loc='best')
+			ax.xaxis_date()
+			ax.autoscale_view()
+			pyplot.setp(fig.gca().get_xticklabels(), rotation=35, horizontalalignment='right')
+		pyplot.show()
 
 if __name__ == '__main__':
 	main()
