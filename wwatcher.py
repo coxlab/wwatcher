@@ -29,9 +29,11 @@ def main():
 		can add as many as you want", nargs="+")
 	parser.add_argument('-c', action="store_true", default=False, help="Check to make sure each animal weighed at least \
 		90% of its most recent maximum (weekend) value for the last 4 weekdays")
-	parser.add_argument('-d', help="Specify the number of weekdays to analyze")
+	parser.add_argument('-d', help="Specify the number of weekdays to analyze with -c option")
 	parser.add_argument('-g', action="store_true", default=False, help="Make a graph of each animal's weight over time")
 	parser.add_argument('-a', action="store_true", default=False, help="Make one graph of every animal's weight over time")
+	parser.add_argument('-r', action="store_true", default=False, help="Graph a linear regression where x values are max weights\
+		and y values are the previous week's average daily weight")
 
 	parsed = parser.parse_args()
 
@@ -121,6 +123,16 @@ def main():
 			ax.autoscale_view()
 			pyplot.setp(fig.gca().get_xticklabels(), rotation=35, horizontalalignment='right')
 		pyplot.show()
+
+	if parsed.r:
+		data_for_graph = watcher.regression()
+		fitted = pylab.polyfit(*data_for_graph, 1)
+		line = pylab.polyval(fitted, data_for_graph[0])
+		pylab.plot(data_for_graph[0], line)
+		pylab.scatter(data_for_graph[0], data_for_graph[1])
+		pylab.xlabel('Weekend (max) weight')
+		pylab.ylabel('Avg Weekday Weight')
+		pylab.show()
 
 if __name__ == '__main__':
 	main()
@@ -361,9 +373,63 @@ class WeightWatcher(object):
 
 	#====================================================================================================================
 	#====================================================================================================================
+	#TODO test this method better, lots of confusing while loops here
+	def regression(self):
+		'''
+		Returns 2 lists in a tuple: a weekend weights list, and a list of average weights from the most recent 4 weekdays (during
+			water reprivation) associated with those weekend weights. 
+		'''
 
-	def correlation(self):
-		raise Exception("Not yet implemented")
+		class addAppend(object):
+			'''
+			A class the counts to 4 items in a list then averages those items, helps in a while loop below
+			'''
+
+			def __init__(self):
+				self.intList = []
+				self.avg = False
+
+			def addInt(self, num):
+				if len(self.intList) < 4:
+					self.intList.append(num)
+				elif len(self.intList) == 4:
+					summed = sum(self.intList)
+					self.avg = summed/4.0
+				else:
+					pass
+
+		weekend_weights = []
+		weekday_avgs = []
+
+		data_rev = self.data[::-1]
+		animals_copy = self.animals_to_analyze[:]
+
+		for animal in animals_copy:
+			data_position = 0
+			while (data_position < self.data_list_length):
+				if (data_rev[data_position][2] == animal) and ("yes" in data_rev[data_position][4]):
+					new_position = data_position
+					count_four = addAppend()
+					weekend_wgt = None
+					while not count_four.avg and (new_position < self.data_list_length):
+						if (data_rev[new_position][2] == animal) and ("no" in data_rev[new_position][4]):
+							try:
+								weekend_wgt = int(data_rev[data_position][3])
+								weekday_wgt = int(data_rev[new_position][3])
+							except ValueError:
+								pass
+							else:
+								count_four.addInt(weekday_wgt)
+						new_position += 1
+					if type(count_four.avg) is float:
+						weekday_avgs.append(count_four.avg)
+						weekend_weights.append(weekend_wgt)
+				data_position += 1
+
+		return (weekend_weights, weekday_avgs)
+
+
+
 
 	#====================================================================================================================
 	#====================================================================================================================
