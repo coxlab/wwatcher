@@ -28,17 +28,17 @@ def main():
 	parser.add_argument('animals', help="Animal IDs to analyze, separated by spaces. At least 1 is required, but you \
 		can add as many as you want", nargs="+")
 	parser.add_argument('-c', action="store_true", default=False, help="Check to make sure each animal weighed at least \
-		90% of its most recent maximum (weekend) value for the last 4 weekdays")
+		90 percent of its most recent maximum (weekend) value for the last 4 weekdays")
 	parser.add_argument('-d', help="Specify the number of weekdays to analyze with -c option")
 	parser.add_argument('-g', action="store_true", default=False, help="Make a graph of each animal's weight over time")
 	parser.add_argument('-a', action="store_true", default=False, help="Make one graph of every animal's weight over time")
-	parser.add_argument('-r', action="store_true", default=False, help="Graph a linear regression where x values are max weights\
+	parser.add_argument('-r', action="store_true", default=False, help="Graph a linear regression where x values are max weights \
 		and y values are the previous week's average daily weight")
 
 	parsed = parser.parse_args()
 
 	#make sure at least 1 specified option calls a WeightWatcher class method, else give the user help and exit
-	if (parsed.c == False) and (parsed.g == False) and (parsed.a == False):
+	if (parsed.c == False) and (parsed.g == False) and (parsed.a == False) and (parsed.r == False):
 		parser.print_help()
 		sys.exit()
 
@@ -125,8 +125,9 @@ def main():
 		pyplot.show()
 
 	if parsed.r:
+
 		data_for_graph = watcher.regression()
-		fitted = pylab.polyfit(*data_for_graph, 1)
+		fitted = pylab.polyfit(data_for_graph[0], data_for_graph[1], 1)
 		line = pylab.polyval(fitted, data_for_graph[0])
 		pylab.plot(data_for_graph[0], line)
 		pylab.scatter(data_for_graph[0], data_for_graph[1])
