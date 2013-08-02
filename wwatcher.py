@@ -70,7 +70,7 @@ def main():
 			print "Animal weights look fine. Awesome!\n"
 		else:
 			for each in problem_animals:
-				print "%s is underweight. Someone call the vet!"
+				print "A stupid algorithm thinks %s is underweight. You might want to check on him!" % each
 
 	if parsed.g:
 
@@ -252,12 +252,12 @@ class WeightWatcher(object):
 				days_status[each] = days
 			return days_status
 
-		def AllDaysRetrieved(DaysNeededDict):
+		def AllDaysRetrieved(DaysNeededDic):
 			'''
 			Returns a boolean to indicate whether EVERY animal has 4 weekday weights recorded, indicated by a value of 0 
 			in countdown
 			'''
-			dict_values = DaysNeededDict.values()
+			dict_values = DaysNeededDic.values()
 			for each in dict_values:
 				if each > 0:
 					return False
@@ -284,11 +284,13 @@ class WeightWatcher(object):
 			if (backwards_data[data_position][2] in animals_copy) and ("no" in backwards_data[data_position][4]):
 				try:
 					animal_weight = int(backwards_data[data_position][3])
+					
+				except ValueError:
+					pass #print "Couldn't get weight at %s, skipping to next cell" % data_position
+				else:
 					if countdown[backwards_data[data_position][2]] > 0:
 						weekday_weights[backwards_data[data_position][2]].append(animal_weight)
 						countdown[backwards_data[data_position][2]] -= 1
-				except ValueError:
-					pass #print "Couldn't get weight at %s, skipping to next cell" % data_position
 			data_position += 1
 
 		print "Latest weekday weights: " + str(weekday_weights) + "\n"
@@ -304,11 +306,11 @@ class WeightWatcher(object):
 		IsHeavyEnoughDict = {}
 		for animal in self.animals_to_analyze:
 			for each in weekday_weights[animal]:
-				if each > (0.9*(maxes[animal])):
+				if float(each) > (0.9*(maxes[animal])):
 					IsHeavyEnoughDict[animal] = True
 				else:
 					IsHeavyEnoughDict[animal] = False
-
+					break
 		return IsHeavyEnoughDict
 
 	#====================================================================================================================
